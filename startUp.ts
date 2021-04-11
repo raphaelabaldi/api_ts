@@ -5,6 +5,8 @@ import Database from "./infra/db";
 import NewsController from "./controller/newsController";
 import Auth from './infra/auth';
 
+import uploads from './infra/uploads';
+
 class StartUp {
 
   public app: express.Application;
@@ -27,11 +29,21 @@ class StartUp {
   }
 
   routes() {
-    this.app.use(Auth.validate);
-
     this.app.route("/").get((req, res) => {
       res.send({ versao: "0.0.1" });
     });
+
+    this.app.route("/uploads").post(uploads.single('file'), (req, res) => {
+      try {
+
+        res.send("arquivo enviado com sucesso!");
+
+      } catch (error) {
+        console.log(error)
+      }
+    })
+
+    this.app.use(Auth.validate);
 
     this.app.route("/api/v1/news").get(NewsController.get);
     this.app.route("/api/v1/news/:id").get(NewsController.getById);
